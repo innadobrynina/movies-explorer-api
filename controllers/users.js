@@ -71,14 +71,8 @@ const login = (req, res, next) => {
     .catch(next);
 };
 
-const logout = async function (req, res, next) {
-  try {
-    res.clearCookie('jwt');
-    res.send('Вы вышли из аккаунта');
-  } catch (error) {
-    next(error);
-  }
-};
+const logout = (req, res) =>
+  res.clearCookie(COOKIE_KEY).send({ message: 'Вы вышли из аккаунта' });
 
 const getMe = (req, res, next) => {
   User.findById(req.user._id)

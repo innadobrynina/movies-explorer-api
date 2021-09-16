@@ -12,7 +12,7 @@ const validateCreateUser = celebrate({
   }),
 });
 
-const validationLogin = celebrate({
+const validateLogin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email()
       .message('Невалидный email')
@@ -52,7 +52,7 @@ const validateCreateMovie = celebrate({
 
 module.exports = {
   validateCreateUser,
-  validationLogin,
+  validateLogin,
   validateUpdateProfile,
   validateCreateMovie,
 };

@@ -4,7 +4,7 @@ const ForbiddenError = require('../errors/ForbiddenError');
 const BadRequestError = require('../errors/BadRequestError');
 
 // возвращаем все фильмы
-const getMovies = (req, res, next) => {
+const getMovie = (req, res, next) => {
   const ownerID = req.user._id;
   Movie.find({ owner: ownerID })
     .then((data) => res.send({ data }))
@@ -76,7 +76,7 @@ const deleteMovie = (req, res, next) => {
 };
 
 module.exports = {
-  getMovies,
+  getMovie,
   createMovie,
   deleteMovie,
 };
