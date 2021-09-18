@@ -1,10 +1,10 @@
 require('dotenv').config();
 
 const MONGO_OPTIONS = {
-/*   useNewUrlParser: true,
+  useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
-  useUnifiedTopology: true, */
+  useUnifiedTopology: true,
 };
 
 const COOKIE_KEY = 'praktikum';
