@@ -5,4 +5,4 @@ const { validateUpdateProfile } = require('../middlewares/celebrate');
 usersRoutes.get('/me', getMe);
 usersRoutes.patch('/me', validateUpdateProfile, updateProfile);
 
-module.exports = usersRoutes;
+module.exports = { usersRoutes };

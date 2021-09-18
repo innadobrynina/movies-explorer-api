@@ -1,21 +1,18 @@
 const jwt = require('jsonwebtoken');
-const AuthError = require('../errors/AuthError');
-const NotFoundError = require('../errors/NotFoundError');
+const { AuthError } = require('../errors/AuthError');
+const { SECRET_KEY, COOKIE_KEY } = require('../utils/constants');
 
 module.exports = (req, res, next) => {
-  const auth = req.headers.cookie;
+  const auth = req.cookies[COOKIE_KEY];
   if (!auth) {
-    throw new AuthError('Необходима авторизация');
+    return next(new AuthError('Необходима авторизация'));
   }
-  const token = auth.replace('jwt=', '');
-  let payload;
-
   try {
-    const { NODE_ENV, JWT_SECRET } = process.env;
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
+    const payload = jwt.verify(auth, SECRET_KEY);
+    req.user = payload; // записываем пейлоуд в объект запроса
   } catch (err) {
-    throw new NotFoundError('Необходима авторизация');
+    return next(new AuthError('Ошибка верификации токена'));
   }
-  req.user = payload;
-  next();
+
+  return next(); // пропускаем запрос дальше
 };

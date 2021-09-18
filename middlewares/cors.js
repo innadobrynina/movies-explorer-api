@@ -4,6 +4,7 @@ const allowedCors = [
   'http://localhost:3000',
   'http://api.indob-diploma.nomoredomains.club',
   'https://api.indob-diploma.nomoredomains.club',
+  'localhost:3000',
 ];
 
 module.exports = (req, res, next) => {
