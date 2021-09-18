@@ -5,4 +5,6 @@ class AuthError extends Error {
   }
 }
 
-module.exports = AuthError;
+module.exports = {
+  AuthError,
+};

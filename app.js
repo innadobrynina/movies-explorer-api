@@ -1,9 +1,9 @@
+const helmet = require('helmet');
 const express = require('express');
 const mongoose = require('mongoose');
-const helmet = require('helmet');
-const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
+const { errors } = require('celebrate');
+/* const cors = require('cors'); */
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const limiter = require('./middlewares/rate-limit');
 const errorHandler = require('./middlewares/errorHandler');
@@ -19,7 +19,7 @@ app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
-app.use(cors);
+/* app.use(cors); */
 app.use(router);
 app.use(errorLogger);
 app.use(errors());
