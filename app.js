@@ -1,9 +1,10 @@
 const helmet = require('helmet');
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
-/* const cors = require('cors'); */
+
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const limiter = require('./middlewares/rate-limit');
 const errorHandler = require('./middlewares/errorHandler');
@@ -19,7 +20,18 @@ app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
-/* app.use(cors); */
+
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://api.indob-diploma.nomoredomains.club',
+    'https://api.indob-diploma.nomoredomains.club',
+    'localhost:3000'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(router);
 app.use(errorLogger);
 app.use(errors());
