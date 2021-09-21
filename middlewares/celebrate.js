@@ -1,11 +1,13 @@
 const { celebrate, Joi } = require('celebrate');
+const { VALIDATION_EMAIL_ERROR } = require('../utils/constantsError');
+const { REQUIRED_EMAIL_ERROR } = require('../utils/constantsError');
 
 const validateCreateUser = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email()
-      .message('Невалидный email')
+      .message(VALIDATION_EMAIL_ERROR)
       .messages({
-        'any.required': 'Поле email обязательное',
+        'any.required': REQUIRED_EMAIL_ERROR,
       }),
     password: Joi.string().required(),
     name: Joi.string().required(),
@@ -15,9 +17,9 @@ const validateCreateUser = celebrate({
 const validateLogin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email()
-      .message('Невалидный email')
+      .message(VALIDATION_EMAIL_ERROR)
       .messages({
-        'any.required': 'Поле email обязательное',
+        'any.required': REQUIRED_EMAIL_ERROR,
       }),
     password: Joi.string().required(),
   }),
@@ -26,9 +28,9 @@ const validateLogin = celebrate({
 const validateUpdateProfile = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email()
-      .message('Невалидный email')
+      .message(VALIDATION_EMAIL_ERROR)
       .messages({
-        'any.required': 'Поле email обязательное',
+        'any.required': REQUIRED_EMAIL_ERROR,
       }),
     name: Joi.string().required(),
   }),
@@ -50,9 +52,16 @@ const validateCreateMovie = celebrate({
   }),
 });
 
+const validateId = celebrate({
+  params: Joi.object().keys({
+    movieId: Joi.string().required().length(24).hex(),
+  }),
+});
+
 module.exports = {
   validateCreateUser,
   validateLogin,
   validateUpdateProfile,
   validateCreateMovie,
+  validateId,
 };

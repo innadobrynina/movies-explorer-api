@@ -5,6 +5,14 @@ const User = require('../models/user');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ConflictError } = require('../errors/ConflictError');
 const { BadRequestError } = require('../errors/BadRequestError');
+const { AuthError } = require('../errors/AuthError');
+
+const {
+  NOT_FOUND_USER_ERROR,
+  BAD_REQUEST_UPDATE_USER_ERROR,
+  CONFLICT_USER_ERROR,
+  BAD_REQUEST_USER_ERROR,
+} = require('../utils/constantsError');
 
 const {
   SECRET_KEY,
@@ -12,27 +20,34 @@ const {
   COOKIE_OPTIONS,
 } = require('../utils/constants');
 
+const OK = 200;
+
 // создаем пользователя
 const createUser = (req, res, next) => {
-  const {
-    name, email, password,
-  } = req.body;
+  const { name, email, password } = req.body;
 
-  bcrypt.hash(password, 10)
-    .then((encryptedPassword) => User.create({
-      name, email, password: encryptedPassword,
-    }))
-    // eslint-disable-next-line no-unused-vars
-    .then((user) => res.send({ data: user.toJSON() }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Вы не заполнили обязательные поля'));
+  User.findOne({ email })
+    .then((mail) => {
+      if (mail) {
+        throw new ConflictError(CONFLICT_USER_ERROR);
+      } else {
+        bcrypt.hash(password, 10)
+          .then((hash) => User.create({
+            name,
+            email,
+            password: hash,
+          }))
+        // eslint-disable-next-line no-unused-vars
+          .then((user) => res.status(OK).send(user))
+          .catch((err) => {
+            if (err.name === 'ValidationError') {
+              throw new BadRequestError(BAD_REQUEST_USER_ERROR);
+            }
+          })
+          .catch(next);
       }
-      if (err.name === 'MongoError' && err.code === 11000) {
-        return next(new ConflictError('Пользователь с такой почтой уже существует'));
-      }
-      return next(err);
-    });
+    })
+    .catch(next);
 };
 
 const login = (req, res, next) => {
@@ -57,14 +72,9 @@ const logout = (req, res) => res.clearCookie(COOKIE_KEY).send({ message: 'Вы �
 
 const getMe = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => next(new NotFoundError('Такого пользователя нет в базе')))
-    .then(({ name, email }) => res.status(200).send({ data: { email, name } }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Вы прислали странный запрос'));
-      }
-      return next(err);
-    });
+    .orFail(() => next(new NotFoundError(NOT_FOUND_USER_ERROR)))
+    .then(({ name, email }) => res.status(OK).send({ data: { email, name } }))
+    .catch(next);
 };
 
 const updateProfile = (req, res, next) => {
@@ -79,17 +89,14 @@ const updateProfile = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() => next(new NotFoundError('Нет такого пользователя')))
-    .then((data) => res.send(data))
+    .orFail(() => next(new NotFoundError(NOT_FOUND_USER_ERROR)))
+    .then((data) => res.status(OK).send(data))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Невалидный id пользователя'));
-      }
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные для обновления профиля'));
+        return next(new BadRequestError(BAD_REQUEST_UPDATE_USER_ERROR));
       }
       if (err.name === 'MongoError' && err.code === 11000) {
-        return next(new ConflictError('Email уже существует'));
+        return next(new ConflictError(CONFLICT_USER_ERROR));
       }
       return next(err);
     });

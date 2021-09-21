@@ -2,12 +2,22 @@ const Movie = require('../models/movie');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ForbiddenError } = require('../errors/ForbiddenError');
 const { BadRequestError } = require('../errors/BadRequestError');
+const { ConflictError } = require('../errors/ConflictError');
+const {
+  BAD_REQUEST_MOVIE_ERROR,
+  NOT_FOUND_MOVIE_ERROR,
+  FORBIDDEN_MOVIE_ERROR,
+  REMOVE_MOVIE_OK,
+  CONFLICT_MOVIE_ERROR,
+} = require('../utils/constantsError');
+
+const OK = 200;
 
 // возвращаем все фильмы
 const getMovie = (req, res, next) => {
   const ownerID = req.user._id;
   Movie.find({ owner: ownerID })
-    .then((data) => res.send({ data }))
+    .then((data) => res.status(OK).send({ data }))
     .catch(next);
 };
 
@@ -41,13 +51,15 @@ const createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   })
-    .then((data) => res.send(data))
+    .then((data) => res.status(OK).send(data))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Вы не заполнили обязательные поля'));
+        throw new BadRequestError(BAD_REQUEST_MOVIE_ERROR);
+      } else if (err.code === 11000) {
+        throw new ConflictError(CONFLICT_MOVIE_ERROR);
       }
-      return next(err);
-    });
+    })
+    .catch(next);
 };
 
 // удаляем фильм
@@ -56,25 +68,17 @@ const deleteMovie = (req, res, next) => {
   const { movieId } = req.params;
 
   Movie.findById(movieId)
-    .orFail(() => next(new NotFoundError('Нет такого фильма')))
+    .orFail(() => next(new NotFoundError(NOT_FOUND_MOVIE_ERROR)))
     .then((card) => {
-      if (!card.owner.equals(ownerID)) {
-        next(new ForbiddenError('Вы не можете удалить этот фильм'));
-      } else {
-        Movie.findByIdAndRemove(movieId)
-          .then((data) => res.send({
-            data,
-            message: 'Информация успешно удалена',
-          }))
+      if (card.owner.toString() === ownerID) {
+        Movie.findByIdAndDelete(movieId)
+          .then(() => res.status(OK).send({ message: REMOVE_MOVIE_OK }))
           .catch(next);
+      } else {
+        throw new ForbiddenError(FORBIDDEN_MOVIE_ERROR);
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Некорректный запрос'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
 module.exports = {
