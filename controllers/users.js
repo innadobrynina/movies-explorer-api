@@ -61,11 +61,9 @@ const login = (req, res, next) => {
         SECRET_KEY,
         { expiresIn: '7d' },
       );
-      const copyuser = user;
-      copyuser.token = token;
       res
         .cookie(COOKIE_KEY, token, COOKIE_OPTIONS)
-        .send({ data: copyuser.toJSON() });
+        .send({ data: token.toJSON() });
     })
     .catch(next);
 };
