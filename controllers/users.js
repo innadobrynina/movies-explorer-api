@@ -63,7 +63,7 @@ const login = (req, res, next) => {
       );
       res
         .cookie(COOKIE_KEY, token, COOKIE_OPTIONS)
-        .send({ data: token.toJSON() });
+        .send({ data: token });
     })
     .catch(next);
 };
