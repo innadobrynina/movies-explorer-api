@@ -15,13 +15,14 @@ const COOKIE_OPTIONS = {
 };
 
 const {
-  PORT = 3000,
+  PORT = 3001,
   MONGO_URL = 'mongodb://localhost:27017/moviesdb',
   NODE_ENV,
   JWT_SECRET,
 } = process.env;
 
 const SECRET_KEY = NODE_ENV === 'production' ? JWT_SECRET : 'dev-key';
+const JWT_SECRET_DEV = 'dev-key';
 
 module.exports = {
   PORT,
@@ -30,4 +31,5 @@ module.exports = {
   SECRET_KEY,
   COOKIE_KEY,
   COOKIE_OPTIONS,
+  JWT_SECRET_DEV,
 };

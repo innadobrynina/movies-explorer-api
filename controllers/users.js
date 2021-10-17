@@ -61,19 +61,23 @@ const login = (req, res, next) => {
         SECRET_KEY,
         { expiresIn: '7d' },
       );
+      console.log(token);
       res
         .cookie(COOKIE_KEY, token, COOKIE_OPTIONS)
-        .send({ data: token });
+        .send({ token });
     })
     .catch(next);
 };
 
-const logout = (req, res) => res.clearCookie(COOKIE_KEY).send({ message: 'Вы вышли из аккаунта' });
+const signout = (req, res) => res.clearCookie(COOKIE_KEY).res.send({ message: 'Вы вышли из аккаунта' });
 
 const getMe = (req, res, next) => {
-  User.findById(req.user._id)
+/*  User.findById(req.user._id)
     .orFail(() => next(new NotFoundError(NOT_FOUND_USER_ERROR)))
     .then(({ name, email }) => res.status(OK).send({ data: { email, name } }))
+    .catch(next); */
+  User.find({ _id: req.user._id })
+    .then((user) => res.send({ user: user[0] }))
     .catch(next);
 };
 
@@ -81,15 +85,15 @@ const updateProfile = (req, res, next) => {
   const userId = req.user._id;
   const { name, email } = req.body;
 
-  User.findByIdAndUpdate(
-    userId,
-    { name, email },
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
-    .orFail(() => next(new NotFoundError(NOT_FOUND_USER_ERROR)))
+  User.findByIdAndUpdate(userId, { name, email }, { new: true, runValidators: true })
+    .then((user) => {
+      if (!user) throw new NotFoundError(NOT_FOUND_USER_ERROR);
+      // eslint-disable-next-line max-len
+      if (user._id.toString() !== req.user._id) throw new BadRequestError(BAD_REQUEST_UPDATE_USER_ERROR);
+      return res.send({ user });
+    })
+    .catch(next);
+  /* .orFail(() => next(new NotFoundError(NOT_FOUND_USER_ERROR)))
     .then((data) => res.status(OK).send(data))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -99,9 +103,9 @@ const updateProfile = (req, res, next) => {
         return next(new ConflictError(CONFLICT_USER_ERROR));
       }
       return next(err);
-    });
+    }); */
 };
 
 module.exports = {
-  createUser, login, logout, getMe, updateProfile,
+  createUser, login, signout, getMe, updateProfile,
 };
