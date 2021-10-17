@@ -15,15 +15,21 @@ const OK = 200;
 
 // возвращаем все фильмы
 const getMovie = (req, res, next) => {
-  const ownerID = req.user._id;
+/*   const ownerID = req.user._id;
+  console.log('ownerID', ownerID);
   Movie.find({ owner: ownerID })
     .then((data) => res.status(OK).send({ data }))
+    .catch(next);
+}; */
+
+  Movie.find({})
+    .then((movies) => res.send({ movies: movies.reverse() }))
     .catch(next);
 };
 
 // создание фильма
 const createMovie = (req, res, next) => {
-  const {
+/*   const {
     country,
     director,
     duration,
@@ -51,7 +57,9 @@ const createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   })
-    .then((data) => res.status(OK).send(data))
+    .then((data) => res.status(OK).send(data)) */
+  Movie.create({ owner: req.user._id, ...req.body })
+    .then((movie) => res.send({ movie }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError(BAD_REQUEST_MOVIE_ERROR);
@@ -64,19 +72,21 @@ const createMovie = (req, res, next) => {
 
 // удаляем фильм
 const deleteMovie = (req, res, next) => {
-  const ownerID = req.user._id;
+  // const ownerID = req.user._id;
   const { movieId } = req.params;
 
   Movie.findById(movieId)
-    .orFail(() => next(new NotFoundError(NOT_FOUND_MOVIE_ERROR)))
-    .then((card) => {
-      if (card.owner.toString() === ownerID) {
-        Movie.findByIdAndDelete(movieId)
-          .then(() => res.status(OK).send({ message: REMOVE_MOVIE_OK }))
-          .catch(next);
-      } else {
+    /* //.orFail(() => next(new NotFoundError(NOT_FOUND_MOVIE_ERROR))) */
+    .then((movie) => {
+      /* //if (card.owner.toString() === ownerID) { */
+      if (!movie) throw new NotFoundError(NOT_FOUND_MOVIE_ERROR);
+      if (movie.owner._id.toString() !== req.user._id) {
         throw new ForbiddenError(FORBIDDEN_MOVIE_ERROR);
       }
+      Movie.findByIdAndDelete(movieId)
+      /* //.then(() => res.status(OK).send({ message: REMOVE_MOVIE_OK })) */
+        .then(() => res.send({ movie }))
+        .catch(next);
     })
     .catch(next);
 };

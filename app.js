@@ -30,6 +30,7 @@ const corsOptions = {
     'https://indob-diploma.nomoredomains.monster',
     'localhost:3000'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: 'Content-Type, Authorization',
   credentials: true,
 };
 
