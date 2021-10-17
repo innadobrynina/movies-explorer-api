@@ -15,7 +15,7 @@ const COOKIE_OPTIONS = {
 };
 
 const {
-  PORT = 3001,
+  PORT = 3000,
   MONGO_URL = 'mongodb://localhost:27017/moviesdb',
   NODE_ENV,
   JWT_SECRET,
