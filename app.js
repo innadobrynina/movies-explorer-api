@@ -10,7 +10,9 @@ const limiter = require('./middlewares/rate-limit');
 const errorHandler = require('./middlewares/errorHandler');
 const router = require('./routes');
 
-const { MONGO_URL, MONGO_OPTIONS, PORT } = require('./utils/constants');
+const {
+  MONGO_URL, MONGO_OPTIONS, PORT, ALLOWED_CORS,
+} = require('./utils/constants');
 
 mongoose.connect(MONGO_URL, MONGO_OPTIONS);
 
@@ -21,7 +23,22 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 
-const corsOptions = {
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // allow requests with no origin
+      // (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (ALLOWED_CORS.includes(origin)) return callback(null, true);
+      return callback(new Error('Ошибка CORS'), true);
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true,
+  }),
+);
+
+/* const corsOptions = {
   origin: [
     'http://localhost:3000',
     'http://api.indob-diploma.nomoredomains.club',
@@ -32,9 +49,9 @@ const corsOptions = {
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type, Authorization',
   credentials: true,
-};
+}; */
 
-app.use(cors(corsOptions));
+/* app.use(cors(corsOptions)); */
 app.use(router);
 app.use(errorLogger);
 app.use(errors());
