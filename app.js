@@ -45,7 +45,6 @@ const corsOptions = {
     'https://api.indob-diploma.nomoredomains.club',
     'http://indob-diploma.nomoredomains.monster',
     'https://indob-diploma.nomoredomains.monster',
-    'https://api.nomoreparties.co/beatfilm-movies',
     'localhost:3000'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type, Authorization',
