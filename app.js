@@ -11,7 +11,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const router = require('./routes');
 
 const {
-  MONGO_URL, MONGO_OPTIONS, PORT, ALLOWED_CORS,
+  MONGO_URL, MONGO_OPTIONS, PORT, ALLOWED_CORS, DEFAULT_ALLOWED_METHODS,
 } = require('./utils/constants');
 
 mongoose.connect(MONGO_URL, MONGO_OPTIONS);
@@ -32,7 +32,7 @@ app.use(
       if (ALLOWED_CORS.includes(origin)) return callback(null, true);
       return callback(new Error('Ошибка CORS'), true);
     },
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    methods: DEFAULT_ALLOWED_METHODS,
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   }),
