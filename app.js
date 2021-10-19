@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 
-app.use(
+/* app.use(
   cors({
     origin: (origin, callback) => {
       // allow requests with no origin
@@ -36,9 +36,9 @@ app.use(
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   }),
-);
+); */
 
-/* const corsOptions = {
+const corsOptions = {
   origin: [
     'http://localhost:3000',
     'http://api.indob-diploma.nomoredomains.club',
@@ -47,11 +47,12 @@ app.use(
     'https://indob-diploma.nomoredomains.monster',
     'localhost:3000'],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
   allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'Accept'],
   credentials: true,
-}; */
+};
 
-// app.use(cors(corsOptions));
+app.use('*', cors(corsOptions));
 app.use(router);
 app.use(errorLogger);
 app.use(errors());
