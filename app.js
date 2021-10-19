@@ -49,7 +49,7 @@ const corsOptions = {
     'localhost:3000'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type, Authorization',
-  credentials: true,
+  /* credentials: true, */
 };
 
 app.use(cors(corsOptions));
