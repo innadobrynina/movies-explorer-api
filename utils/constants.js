@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const config = {};
+
 const MONGO_OPTIONS = {
   useNewUrlParser: true,
   /*   useCreateIndex: true,
@@ -24,7 +26,7 @@ const {
 const SECRET_KEY = NODE_ENV === 'production' ? JWT_SECRET : 'dev-key';
 const JWT_SECRET_DEV = 'dev-key';
 
-const ALLOWED_CORS = [
+config.ALLOWED_CORS = [
   'http://localhost:3000',
   'http://api.indob-diploma.nomoredomains.club',
   'https://api.indob-diploma.nomoredomains.club',
@@ -32,6 +34,7 @@ const ALLOWED_CORS = [
   'https://indob-diploma.nomoredomains.monster',
   'localhost:3000'];
 
+config.DEFAULT_ALLOWED_METHODS = 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS';
 module.exports = {
   PORT,
   MONGO_URL,
@@ -40,5 +43,5 @@ module.exports = {
   COOKIE_KEY,
   COOKIE_OPTIONS,
   JWT_SECRET_DEV,
-  ALLOWED_CORS,
+  config,
 };
