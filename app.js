@@ -46,9 +46,9 @@ const corsOptions = {
     'http://indob-diploma.nomoredomains.monster',
     'https://indob-diploma.nomoredomains.monster',
     'localhost:3000'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders: 'Content-Type, Authorization',
-  /* credentials: true, */
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'Accept'],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
