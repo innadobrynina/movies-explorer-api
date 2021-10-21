@@ -1,60 +1,54 @@
-const helmet = require('helmet');
+require('dotenv').config();
+
 const express = require('express');
-const cors = require('cors');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const helmet = require('helmet');
+
 const { errors } = require('celebrate');
+const router = require('./routes/index');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const limiter = require('./middlewares/rate-limit');
-const errorHandler = require('./middlewares/errorHandler');
-const router = require('./routes');
+const { limiter } = require('./middlewares/rate-limit');
+const { errorHandler } = require('./middlewares/errorHandler');
 
-const {
-  MONGO_URL, MONGO_OPTIONS, PORT, ALLOWED_CORS, DEFAULT_ALLOWED_METHODS,
-} = require('./utils/constants');
-
-mongoose.connect(MONGO_URL, MONGO_OPTIONS);
-
+const { PORT = 3000, DB_PATH = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
 const app = express();
-app.use(requestLogger);
-app.use(limiter);
-app.use(express.json());
-app.use(cookieParser());
-app.use(helmet());
-
-/* app.use(
-  cors({
-    origin: (origin, callback) => {
-      // allow requests with no origin
-      // (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      if (ALLOWED_CORS.includes(origin)) return callback(null, true);
-      return callback(new Error('Ошибка CORS'), true);
-    },
-    methods: DEFAULT_ALLOWED_METHODS,
-    allowedHeaders: 'Content-Type, Authorization',
-    credentials: true,
-  }),
-); */
+mongoose.connect(`${DB_PATH}`, {
+  useNewUrlParser: true,
+  /* useCreateIndex: true,
+  useFindAndModify: false, */
+});
 
 const corsOptions = {
   origin: [
+    'http://localhost:3001',
     'http://localhost:3000',
     'http://api.indob-diploma.nomoredomains.club',
     'https://api.indob-diploma.nomoredomains.club',
     'http://indob-diploma.nomoredomains.monster',
     'https://indob-diploma.nomoredomains.monster',
-    'localhost:3000'],
+    'localhost:3000',
+    'localhost:3001',
+    'https://62.84.113.159',
+    'http://62.84.113.159',
+  ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'authorization'],
   credentials: true,
 };
 
 app.use('*', cors(corsOptions));
-app.use(router);
+app.use(helmet());
+app.use(express.json());
+app.use(requestLogger);
+app.use(limiter);
+app.use('/', router);
+
+// app.use(cookieParser());
+
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);

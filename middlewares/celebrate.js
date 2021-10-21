@@ -9,8 +9,8 @@ const validateCreateUser = celebrate({
       .messages({
         'any.required': REQUIRED_EMAIL_ERROR,
       }),
-    password: Joi.string().required(),
-    name: Joi.string().required(),
+    password: Joi.string().required().min(8),
+    name: Joi.string().required().min(2).max(30),
   }),
 });
 
@@ -21,7 +21,7 @@ const validateLogin = celebrate({
       .messages({
         'any.required': REQUIRED_EMAIL_ERROR,
       }),
-    password: Joi.string().required(),
+    password: Joi.string().required().min(8),
   }),
 });
 
@@ -32,7 +32,7 @@ const validateUpdateProfile = celebrate({
       .messages({
         'any.required': REQUIRED_EMAIL_ERROR,
       }),
-    name: Joi.string().required(),
+    name: Joi.string().required().min(2).max(30),
   }),
 });
 
@@ -40,13 +40,13 @@ const validateCreateMovie = celebrate({
   body: Joi.object().keys({
     country: Joi.string().required(),
     director: Joi.string().required(),
-    duration: Joi.number().integer().min(1),
+    duration: Joi.number().required(),
     year: Joi.string().required(),
     description: Joi.string().required(),
-    image: Joi.string().required().uri(),
-    trailer: Joi.string().required().uri(),
-    thumbnail: Joi.string().required().uri(),
-    movieId: Joi.number().integer().min(1),
+    image: Joi.string().uri().required(),
+    trailer: Joi.string().uri().required(),
+    thumbnail: Joi.string().uri().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),
@@ -54,8 +54,8 @@ const validateCreateMovie = celebrate({
 
 const validateId = celebrate({
   params: Joi.object().keys({
-    movieId: Joi.string().required().length(24).hex(),
-  }),
+    movieId: Joi.string().hex().length(24),
+  }).unknown(true),
 });
 
 module.exports = {
