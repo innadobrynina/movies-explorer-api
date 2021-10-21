@@ -3,7 +3,7 @@ const {
   SERVER_ERROR,
 } = require('../utils/constantsError');
 
-const errorHandler = (err, req, res, next) => {
+module.exports.errorHandler = (err, req, res, next) => {
   const { statusCode = 500, message } = err;
   if (err.kind === 'ObjectId') {
     res.status(400).send({
@@ -17,5 +17,3 @@ const errorHandler = (err, req, res, next) => {
 
   next();
 };
-
-module.exports = errorHandler;
