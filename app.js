@@ -28,6 +28,8 @@ const corsOptions = {
     'http://localhost:3000',
     'http://indob-diploma.nomoredomains.monster/',
     'https://indob-diploma.nomoredomains.monster/',
+    'https://api.indob-diploma.nomoredomains.club/',
+    'http://api.indob-diploma.nomoredomains.club/',
     'localhost:3000',
     'localhost:3001',
     'https://62.84.113.159',
@@ -46,7 +48,7 @@ app.use(requestLogger);
 app.use(limiter);
 app.use(helmet());
 
-app.use('*', cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 app.use('/', routes);
