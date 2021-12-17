@@ -22,14 +22,12 @@ mongoose.connect(server, {
 
 const corsOptions = {
   origin: [
+    'http://indob-diploma.nomoredomains.monster/',
+    'https://indob-diploma.nomoredomains.monster/',
     'http://localhost:3001',
     'https://localhost:3001',
     'https://localhost:3000',
     'http://localhost:3000',
-    'http://indob-diploma.nomoredomains.monster/',
-    'https://indob-diploma.nomoredomains.monster/',
-    'https://api.indob-diploma.nomoredomains.club/',
-    'http://api.indob-diploma.nomoredomains.club/',
     'localhost:3000',
     'localhost:3001',
     'https://62.84.113.159',
