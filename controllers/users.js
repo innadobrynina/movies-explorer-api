@@ -6,9 +6,10 @@ const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 const BadRequestError = require('../errors/BadRequestError');
 const AuthError = require('../errors/AuthError');
-const { devJwtSecret } = require('../utils/config');
 
-const { NOT_FOUND_USER_ERROR, CONFLICT_USER_ERROR } = require('../utils/constantsError');
+const { NOT_FOUND_USER_ERROR, CONFLICT_USER_ERROR, BAD_REQUEST_USER_ERROR } = require('../utils/constantsError');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const handleError = (err) => {
   if (err.name === 'MongoError') {
@@ -19,12 +20,25 @@ const handleError = (err) => {
   }
 };
 
-const handleIdNotFound = () => {
-  throw new NotFoundError(NOT_FOUND_USER_ERROR);
+module.exports.getLoggedUser = (req, res, next) => {
+  const id = req.user._id;
+  User.findById(id)
+    .orFail(new Error('NotValidId'))
+    .then((user) => res.send(user))
+    .catch((error) => {
+      if (error.message === 'NotValidId') {
+        throw new NotFoundError('Пользователь по указанному _id не найден.');
+      }
+      if (error.name === 'CastError') {
+        throw new BadRequestError('Невалидный id.');
+      }
+      next(error);
+    })
+    .catch(next);
 };
 
 // создаем пользователя
-const createUser = (req, res, next) => {
+module.exports.createUser = (req, res, next) => {
   const { name, email, password } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
@@ -32,48 +46,57 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then(({ _id }) => User.findById(_id))
-    .then((user) => res.send(user))
+    .then((user) => {
+      res.send({
+        name: user.name,
+        email: user.email,
+        id: user._id,
+      });
+    })
     .catch((err) => handleError(err))
     .catch(next);
 };
 
-const getMe = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(() => handleIdNotFound())
-    .then((user) => res.send(user))
-    .catch((err) => handleError(err))
-    .catch(next);
-};
-
-const login = (req, res, next) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-    // аутентификация успешна! пользователь в переменной user
-      const { NODE_ENV, JWT_SECRET } = process.env;
-      const token = jwt.sign({ _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : devJwtSecret,
-        { expiresIn: '7d' });
-      res.send({ token });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+
+      );
+      return res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true, sameSite: true }).send({ token });
     })
-    .catch((err) => {
-      throw new AuthError(err.message);
-    })
-    .catch(next);
+    .catch(() => {
+      next(new AuthError('Неправильные почта или пароль'));
+    });
 };
 
-const getProfileInfo = (req, res, next) => {
-  const userId = req.user._id;
-  const { email, name } = req.body;
-
-  User.findByIdAndUpdate(userId, { email, name }, { new: true, runValidators: true })
-    .orFail(() => handleIdNotFound())
+module.exports.getProfileInfo = (req, res, next) => {
+  const { name, email } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
+    .orFail(new Error('NotValidId'))
     .then((user) => res.send(user))
-    .catch((err) => handleError(err))
+    .catch((error) => {
+      if (error.message === 'NotValidId') {
+        throw new NotFoundError(NOT_FOUND_USER_ERROR);
+      }
+      if (error.name === 'CastError') {
+        throw new BadRequestError(BAD_REQUEST_USER_ERROR);
+      }
+      if (error.name === 'ValidationError') {
+        throw new BadRequestError(BAD_REQUEST_USER_ERROR);
+      }
+      if (error.codeName === 'DuplicateKey') {
+        throw new ConflictError(CONFLICT_USER_ERROR);
+      }
+      next(error);
+    })
     .catch(next);
 };
 
-module.exports = {
-  createUser, login, getMe, getProfileInfo,
+module.exports.signOut = (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Пользователь вышел' });
 };

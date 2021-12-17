@@ -1,21 +1,21 @@
 require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const helmet = require('helmet');
-
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const { errors } = require('celebrate');
-const router = require('./routes/index');
-
+const routes = require('./routes/index');
+const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { limiter } = require('./middlewares/rate-limit');
-const { errorHandler } = require('./middlewares/errorHandler');
+const { server } = require('./utils/config');
+const limiter = require('./middlewares/rate-limit');
 
-const { PORT = 3000, DB_PATH = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
+const { PORT = 3000 } = process.env;
 const app = express();
-mongoose.connect(`${DB_PATH}`, {
+mongoose.connect(server, {
   useNewUrlParser: true,
+  useUnifiedTopology: true,
   /* useCreateIndex: true,
   useFindAndModify: false, */
 });
@@ -23,6 +23,8 @@ mongoose.connect(`${DB_PATH}`, {
 const corsOptions = {
   origin: [
     'http://localhost:3001',
+    'https://localhost:3001',
+    'https://localhost:3000',
     'http://localhost:3000',
     'http://api.indob-diploma.nomoredomains.club',
     'https://api.indob-diploma.nomoredomains.club',
@@ -36,21 +38,23 @@ const corsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'authorization'],
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'Access-Control-Allow-Credentials'],
   credentials: true,
 };
 
-app.use('*', cors(corsOptions));
-app.use(helmet());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 app.use(limiter);
-app.use('/', router);
+app.use(helmet());
 
-// app.use(cookieParser());
+app.use(cors(corsOptions));
+app.use(cookieParser());
+
+app.use('/', routes);
 
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 // eslint-disable-next-line no-console
-app.listen(PORT, () => console.log('Запустился!!'));
+app.listen(PORT, () => console.log(`Запустился !! ${PORT}`));
