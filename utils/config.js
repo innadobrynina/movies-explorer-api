@@ -1,2 +1,5 @@
-module.exports.devJwtSecret = 'dev-secret';
-module.exports.dbName = 'bitfilmsdb';
+const server = 'mongodb://localhost:27017/movies-explorer';
+
+module.exports = {
+  server,
+};

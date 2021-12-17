@@ -1,19 +1,15 @@
 const {
-  VALIDATION_DATA_ERROR,
   SERVER_ERROR,
 } = require('../utils/constantsError');
 
-module.exports.errorHandler = (err, req, res, next) => {
+module.exports = (err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  if (err.kind === 'ObjectId') {
-    res.status(400).send({
-      message: VALIDATION_DATA_ERROR,
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? SERVER_ERROR
+        : message,
     });
-  } else {
-    res.status(statusCode).send({
-      message: statusCode === 500 ? SERVER_ERROR : message,
-    });
-  }
-
   next();
 };
