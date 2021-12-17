@@ -26,8 +26,6 @@ const corsOptions = {
     'https://localhost:3001',
     'https://localhost:3000',
     'http://localhost:3000',
-    'http://api.indob-diploma.nomoredomains.club',
-    'https://api.indob-diploma.nomoredomains.club',
     'http://indob-diploma.nomoredomains.monster',
     'https://indob-diploma.nomoredomains.monster',
     'localhost:3000',
