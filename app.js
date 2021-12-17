@@ -36,7 +36,7 @@ const corsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'Access-Control-Allow-Credentials', 'Access-Control-Allow-Headers'],
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'Access-Control-Allow-Credentials'],
   credentials: true,
 };
 
@@ -46,7 +46,7 @@ app.use(requestLogger);
 app.use(limiter);
 app.use(helmet());
 
-app.use(cors(corsOptions));
+app.use('*', cors(corsOptions));
 app.use(cookieParser());
 
 app.use('/', routes);
