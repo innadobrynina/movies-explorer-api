@@ -22,8 +22,8 @@ mongoose.connect(server, {
 
 const corsOptions = {
   origin: [
-    'http://indob-diploma.nomoredomains.monster/',
-    'https://indob-diploma.nomoredomains.monster/',
+    'http://indob-diploma.nomoredomains.monster',
+    'https://indob-diploma.nomoredomains.monster',
     'http://localhost:3001',
     'https://localhost:3001',
     'https://localhost:3000',
@@ -46,7 +46,7 @@ app.use(requestLogger);
 app.use(limiter);
 app.use(helmet());
 
-app.use('*', cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 app.use('/', routes);
