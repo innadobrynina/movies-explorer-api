@@ -46,7 +46,7 @@ app.use(requestLogger);
 app.use(limiter);
 app.use(helmet());
 
-app.use(cors(corsOptions));
+app.use('*', cors(corsOptions));
 app.use(cookieParser());
 
 app.use('/', routes);
