@@ -1,14 +1,13 @@
-const {
-  SERVER_ERROR,
-} = require('../utils/constantsError');
+const { serverErrorText } = require('../utils/constantsError');
+const { serverError } = require('../utils/config');
 
 module.exports = (err, req, res, next) => {
-  const { statusCode = 500, message } = err;
+  const { statusCode = serverError, message } = err;
   res
     .status(statusCode)
     .send({
-      message: statusCode === 500
-        ? SERVER_ERROR
+      message: statusCode === serverError
+        ? serverErrorText
         : message,
     });
   next();

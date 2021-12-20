@@ -4,7 +4,7 @@ const usersRoutes = require('./users');
 const moviesRoutes = require('./movies');
 const enterRoute = require('./sign');
 const NotFoundError = require('../errors/NotFoundError');
-const NOT_FOUND_ADDRESS_ERROR = require('../utils/constantsError');
+const { NOT_FOUND_ADDRESS_ERROR } = require('../utils/constantsError');
 
 router.use('/', enterRoute);
 router.use('/', auth);

@@ -1,7 +1,9 @@
+const { conflictRequestError } = require('../utils/config');
+
 class ConflictError extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = 409;
+    this.statusCode = conflictRequestError;
   }
 }
 
