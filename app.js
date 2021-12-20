@@ -25,7 +25,7 @@ mongoose.connect(server, {
 app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 app.use(limiter);
 app.use(cookieParser());
