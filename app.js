@@ -28,9 +28,7 @@ app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 app.use(limiter);
-
 app.use(cookieParser());
-
 app.use('/', routes);
 
 app.use(errorLogger);
