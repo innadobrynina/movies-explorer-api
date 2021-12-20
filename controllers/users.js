@@ -56,7 +56,7 @@ module.exports.createUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getProfileInfo = (req, res, next) => {
+module.exports.patchUser = (req, res, next) => {
   const { name, email } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
     .orFail(new Error('NotValidId'))
