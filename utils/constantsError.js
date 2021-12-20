@@ -16,6 +16,7 @@ const VALIDATION_LINK_ERROR = 'Некорректный формат ccылки'
 const VALIDATION_EMAIL_ERROR = 'Некорректный формат email';
 const REMOVE_MOVIE_OK = 'Фильм удален';
 const REQUIRED_EMAIL_ERROR = 'Поле email обязательное';
+const serverErrorText = 'На сервере произошла ошибка';
 
 module.exports = {
   NOT_FOUND_MOVIE_ERROR,
@@ -36,4 +37,5 @@ module.exports = {
   VALIDATION_EMAIL_ERROR,
   REMOVE_MOVIE_OK,
   REQUIRED_EMAIL_ERROR,
+  serverErrorText,
 };

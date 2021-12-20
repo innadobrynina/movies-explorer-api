@@ -1,7 +1,9 @@
+const { autorizationError } = require('../utils/config');
+
 class AuthError extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = 401;
+    this.statusCode = autorizationError;
   }
 }
 

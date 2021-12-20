@@ -11,15 +11,6 @@ const { NOT_FOUND_USER_ERROR, CONFLICT_USER_ERROR, BAD_REQUEST_USER_ERROR } = re
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const handleError = (err) => {
-  if (err.name === 'MongoError') {
-    throw new ConflictError(CONFLICT_USER_ERROR);
-  }
-  if (err.name === 'ValidationError' || err.name === 'CastError') {
-    throw new BadRequestError(err.message);
-  }
-};
-
 module.exports.getLoggedUser = (req, res, next) => {
   const id = req.user._id;
   User.findById(id)
@@ -53,7 +44,15 @@ module.exports.createUser = (req, res, next) => {
         id: user._id,
       });
     })
-    .catch((err) => handleError(err))
+    .catch((error) => {
+      if (error.name === 'ValidationError' || error.name === 'CastError') {
+        throw new BadRequestError('Переданы некорректные данные при создании пользователя.');
+      }
+      if (error.name === 'MongoError' && error.code === 11000) {
+        throw new ConflictError('Пользователь с таким email уже зарегистрирован.');
+      }
+      next(error);
+    })
     .catch(next);
 };
 
