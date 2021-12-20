@@ -1,8 +1,8 @@
 const { serverErrorText } = require('../utils/constantsError');
 const { serverError } = require('../utils/config');
 
-module.exports = (err, req, res, next) => {
-  const { statusCode = serverError, message } = err;
+module.exports = (error, req, res, next) => {
+  const { statusCode = serverError, message } = error;
   res
     .status(statusCode)
     .send({
