@@ -18,8 +18,6 @@ const app = express();
 mongoose.connect(server, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
 });
 
 app.use(express.json());
