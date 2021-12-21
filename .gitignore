@@ -1,4 +1,6 @@
 *.log
 node_modules
 .env
-/.idea/
+.npm
+.DS_Store
+.idea
