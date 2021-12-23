@@ -13,12 +13,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   email: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
     unique: true,
     validate: {
       validator(v) {
@@ -29,9 +29,8 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
     select: false,
-    minlength: 8,
   },
 });
 

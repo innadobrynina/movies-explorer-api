@@ -33,7 +33,6 @@ app.use('/', routes);
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
-app.set('trust proxy', 1);
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Запустился !! ${PORT}`);

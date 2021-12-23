@@ -8,32 +8,32 @@ const {
 const movieSchema = new mongoose.Schema({
   country: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   director: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   duration: {
     type: Number,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   year: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   description: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   image: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
     validate: {
       validator(v) {
         return validator.isURL(v);
@@ -43,7 +43,7 @@ const movieSchema = new mongoose.Schema({
   },
   trailer: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
     validate: {
       validator(v) {
         return validator.isURL(v);
@@ -54,7 +54,7 @@ const movieSchema = new mongoose.Schema({
 
   thumbnail: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
     validate: {
       validator(v) {
         return validator.isURL(v);
@@ -66,22 +66,22 @@ const movieSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   movieId: {
     type: Number,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   nameRU: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 
   nameEN: {
     type: String,
-    required: [true, REQUIRED_INPUT_ERROR],
+    required: true,
   },
 });
 
